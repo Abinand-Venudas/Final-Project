@@ -65,57 +65,55 @@ exports.signUp =  async function (req,res) {
 exports.login = async function (req,res) {
     try {
         let body = req.body;
+        let name = body.name;
         let email = body.email;
-        let password = body.password
-         if(!email){
-             return res.status(400).send({
-                message : "Email is required",
-                success : false
-            });
-            
-        }
-          if(!password){
-             return res.status(400).send({
-                message : "Password is required",
-                success : false
-            });
-        }
+        let password = body.password;
 
-        const user = await user.findOne({email : email})
-        if(!user){
+             if (!name) {
             return res.status(400).send({
-                message : "Invalid email",
+                message: "Name required",
+                success: false
+            })
+        }
+        if (!name) {
+            return res.status(400).send({
+                message: "Email required",
+                success: false
+            })
+        }
+         if (!password) {
+            return res.status(400).send({
+                message : "Password required",
                 success : false
-            });
+            })
+        }
+        let matchEmail = await users.findOne({email : email})
+        if(!matchEmail){
+            return res.status(400).send({
+                message: "Invalid Email"
+            })
         }
 
-        const match = await bcrypt.compareSync(password , user.password);
-        if(!match){
-             return res.status(400).send({
-                message : "Invalid password",
-                success : false
-            });
+        let matchPassword = await bcrypt.compareSync(password ,users.password)
+        if(!matchPassword)
+        {
+            return res.status(400).send({
+                message: "Incorrect password",
+                success:false
+            })
         }
-        else{
-            let response = success_function(
-                {
-                    success:true,
-                    statusCode:200,
-                    message:"Login successfull"
-                }
-            );
-            res.status(response.statusCode).send(response)
-            return;
-        }
-
-
+        
+        return res.status(200).send({
+            message : "Login successfull",
+            success:true
+        })
         
     } catch (error) {
-         console.log(error);
+        console.log(error);
         return res.status(400).send({
-            message : error.message || error,
-            success : false
+            message: error.message || error,
+            success:false
         })
+        
     }
-    
 }
