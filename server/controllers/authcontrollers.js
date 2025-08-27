@@ -147,10 +147,10 @@ exports.emailVerification = async function (req, res) {
        
         let data = {
             email: email,
-            otp: setOTP
+            code: setOTP
         };
 
-        let userData = await otp.create(data);
+        let userData = await Otp.create(data);
         return res.status(200).send({
             message: "OTP sent to your email",
             success: true
@@ -167,7 +167,7 @@ exports.emailVerification = async function (req, res) {
 
 exports.otpVerification = async function (req,res){
     try {
-        let otpFrontend = req.body.otp;
+        let otpFrontend = req.body.Otp;
         let otpdata = await Otp.findOne({otp:otpFrontend});
 
         if(!otpdata){
