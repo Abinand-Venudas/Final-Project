@@ -64,8 +64,6 @@ exports.signUp =  async function (req,res) {
     }
 }
 
-
-
 exports.login = async function (req, res) {
     try {
         let body = req.body;
@@ -119,8 +117,7 @@ exports.login = async function (req, res) {
             success: false
         });
     }
-};
-
+}
 
 exports.emailVerification = async function (req, res) {
     try {
@@ -167,21 +164,67 @@ exports.emailVerification = async function (req, res) {
 
 exports.otpVerification = async function (req,res){
     try {
-        let otpFrontend = req.body.Otp;
-        let otpdata = await Otp.findOne({otp:otpFrontend});
-
-        if(!otpdata){
+        let email = req.params.email;
+        let otp = req.body.code;
+        let otpdata = await Otp.findOne({email});
+        console.log(otpdata);
+        
+         if(otpdata != otp){
             return res.status(400).send({
-                message: "Invalid OTP",
+                message: "otp expired or email not found",
+                success: false
+            });
+        }
+        else{
+            return res.status(200).send({
+                message: "otp verified",
+                success: true
+            });
+        }
+
+
+    } catch (error) {
+        console.log();
+         return res.status(400).send({
+            message: error.message || 5000,
+            success: false
+        });
+    }
+}
+
+exports.changePassword = async function (req,res){
+    try {
+        let email = req.params.email;
+        let password = req.body.password;
+
+        if (!password){
+            return res.status(400).send({
+                message: "Password is required",
                 success: false
             });
         }
 
-        return res.status(200).send({
-            message: "OTP verified successfully",
-            success: true
+        let changePassword = req.body.changePassword
+    if(!changePassword){
+        return res.status(400).send({
+            message : "changePassword is required",
+            success : false
         });
-    } catch (error) {
+    }
+    
+
+    if(password != changePassword){
+        return res.status(400).send({
+            message : "Password and confirm password does not match",
+            success : false
+        });
+    } 
+
+else{
+       await users.updateOne({ email }, { $set: { password: changePassword } });
+}
+    }
+    catch (error) {
         console.log();
          return res.status(400).send({
             message: error.message || 5000,
