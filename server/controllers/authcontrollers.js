@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const OTPgenerate = require('../utils/otpGenerator');
 const Otp = require('../Data-Base/Models/otp');
 
-exports.signUp =  async function (req,res) {
+exports.signUp =  async function (req,res) { 
     try {
         let body = req.body;
         let name = body.name;
@@ -31,7 +31,7 @@ exports.signUp =  async function (req,res) {
         }
         let emailCheck = await users.findOne({email : email})
 
-        if(emailCheck){
+        if(!emailCheck){
             return res.status(400).send({
                 message : "Email already exists",
                 success : false
@@ -212,7 +212,6 @@ exports.changePassword = async function (req,res){
         });
     }
     
-
     if(password != changePassword){
         return res.status(400).send({
             message : "Password and confirm password does not match",
