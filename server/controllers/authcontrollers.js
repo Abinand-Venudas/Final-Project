@@ -31,7 +31,7 @@ exports.signUp =  async function (req,res) {
         }
         let emailCheck = await users.findOne({email : email})
 
-        if(!emailCheck){
+        if(emailCheck){
             return res.status(400).send({
                 message : "Email already exists",
                 success : false
@@ -141,7 +141,7 @@ exports.emailVerification = async function (req, res) {
         let setOTP = OTPgenerate(6);
         console.log("setOTP: ", setOTP)
 
-       
+
         let data = {
             email: email,
             code: setOTP
@@ -162,72 +162,78 @@ exports.emailVerification = async function (req, res) {
     }
 }
 
-exports.otpVerification = async function (req,res){
+exports.otpVerification = async function (req, res) {
     try {
-        let email = req.params.email;
-        let otp = req.body.code;
-        let otpdata = await Otp.findOne({email});
-        console.log(otpdata);
-        
-         if(otpdata != otp){
+        let email = req.body.email
+        let code = req.body.code
+
+        if (!code) {
             return res.status(400).send({
-                message: "otp expired or email not found",
-                success: false
-            });
-        }
-        else{
-            return res.status(200).send({
-                message: "otp verified",
-                success: true
-            });
+                success: false,
+                message: "Enter the OTP"
+            })
         }
 
+        let matchCode = await Otp.findOne({ email }).sort({ createdAt: -1 });
 
+if (!matchCode) {
+  return res.status(400).send({
+    success: false,
+    message: "OTP expired or not found"
+  });
+}
+
+// Compare as strings without spaces
+if (String(matchCode.code).trim() !== String(code).trim()) {
+  return res.status(400).send({
+    success: false,
+    message: "Code doesn't match"
+  });
+}
+        return res.status(200).send({
+            success: true,
+            message: "OTP verified successfully"
+        })
     } catch (error) {
-        console.log();
-         return res.status(400).send({
-            message: error.message || 5000,
-            success: false
-        });
-    }
-}
-
-exports.changePassword = async function (req,res){
-    try {
-        let email = req.params.email;
-        let password = req.body.password;
-
-        if (!password){
-            return res.status(400).send({
-                message: "Password is required",
-                success: false
-            });
-        }
-
-        let changePassword = req.body.changePassword
-    if(!changePassword){
         return res.status(400).send({
-            message : "changePassword is required",
-            success : false
-        });
-    }
-    
-    if(password != changePassword){
-        return res.status(400).send({
-            message : "Password and confirm password does not match",
-            success : false
-        });
-    } 
+            success: false,
+            message: error.message
+        })
 
-else{
-       await users.updateOne({ email }, { $set: { password: changePassword } });
-}
-    }
-    catch (error) {
-        console.log();
-         return res.status(400).send({
-            message: error.message || 5000,
-            success: false
-        });
     }
 }
+
+exports.changePassword = async function (req, res) {
+  try {
+    const email = req.params.email;
+    const { password, changePassword } = req.body;
+
+    if (!password || !changePassword) {
+      return res.status(400).send({
+        message: "Both password fields are required",
+        success: false,
+      });
+    }
+
+    if (password !== changePassword) {
+      return res.status(400).send({
+        message: "Password and confirm password do not match",
+        success: false,
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(changePassword, 10);
+    await users.updateOne({ email }, { $set: { password: hashedPassword } });
+
+    return res.status(200).send({
+      message: "Password changed successfully",
+      success: true,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({
+      message: error.message || "Internal Server Error",
+      success: false,
+    });
+  }
+};

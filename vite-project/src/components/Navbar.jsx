@@ -33,12 +33,12 @@ const Navbar = () => {
                 <Link to="/signup" className="block px-4 py-2 hover:bg-gray-100">
                   Signup
                 </Link>
-                <button
-                  onClick={() => alert("Logout clicked")}
-                  className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                <Link
+                  to="/login"
+                  className="block px-4 py-2 hover:bg-gray-100"
                 >
-                  Logout
-                </button>
+                  Login
+                </Link>
               </div>
             )}
           </div>
@@ -74,12 +74,9 @@ const Navbar = () => {
                 <Link to="/signup" className="block px-4 py-2 hover:bg-gray-100">
                   Signup
                 </Link>
-                <button
-                  onClick={() => alert("Logout clicked")}
-                  className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                >
-                  Logout
-                </button>
+                <Link to="/login" className="block px-4 py-2 hover:bg-gray-100">
+                  Login
+                </Link>
               </div>
             )}
           </div>
