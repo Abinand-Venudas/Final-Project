@@ -24,7 +24,7 @@ const Signup = () => {
 
       if (data.success) {
         setMessage("✅ Account created successfully!");
-        setTimeout(() => navigate("/login"), 1500); // redirect after signup
+        setTimeout(() => navigate("/"), 1500); 
       } else {
         setMessage("❌ " + data.message);
       }

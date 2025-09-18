@@ -2,6 +2,9 @@ const users = require('../Data-Base/Models/user')
 const bcrypt = require('bcryptjs');
 const OTPgenerate = require('../utils/otpGenerator');
 const Otp = require('../Data-Base/Models/otp');
+const jwt = require('jsonwebtoken')
+const dotenv = require('dotenv')
+dotenv.config()
 
 exports.signUp =  async function (req,res) { 
     try {
@@ -49,11 +52,18 @@ exports.signUp =  async function (req,res) {
             password : hashedPassword,
             user_type : userType
         }
-        let userData = await users.create(data);
+        await users.create(data);
+
+         const userData = users.findOne({email})
+         const token = jwt.sign({userId : userData._id},process.env.PRIVATE_KEY,{expiresIn : '5d'})
+
+
         return res.status(200).send({
             message : "Account created successfully",
-            success : true
+            success : true,
+            data : token
         })
+
     } catch (error) {
         console.log(error);
         return res.status(400).send({
@@ -104,12 +114,15 @@ exports.login = async function (req, res) {
             });
         }
 
+       const token = jwt.sign({userId : userData._id},process.env.PRIVATE_KEY,{expires : '5d'})
         // Success
         return res.status(200).send({
             message: "Login successful",
             success: true,
+            data : token
         });
 
+        
     } catch (error) {
         console.log(error);
         return res.status(400).send({
