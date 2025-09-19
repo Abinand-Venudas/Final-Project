@@ -54,9 +54,8 @@ exports.signUp =  async function (req,res) {
         }
         await users.create(data);
 
-         const userData = users.findOne({email})
-         const token = jwt.sign({userId : userData._id},process.env.PRIVATE_KEY,{expiresIn : '5d'})
-
+         const userData = await users.findOne({email})
+         const token = jwt.sign({userId : userData._id},process.env.PRIVATE_KEY,{expiresIn : '5d',jwtid: Date.now().toString()} )
 
         return res.status(200).send({
             message : "Account created successfully",
@@ -114,7 +113,7 @@ exports.login = async function (req, res) {
             });
         }
 
-       const token = jwt.sign({userId : userData._id},process.env.PRIVATE_KEY,{expires : '5d'})
+         const token = jwt.sign({userId : userData._id},process.env.PRIVATE_KEY,{expiresIn : '5d',jwtid: Date.now().toString()} )
         // Success
         return res.status(200).send({
             message: "Login successful",

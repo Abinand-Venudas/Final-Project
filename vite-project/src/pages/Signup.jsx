@@ -22,7 +22,14 @@ const Signup = () => {
 
       const data = await res.json();
 
-      if (data.success) {
+    if (data.success) {
+        // ✅ Save token in localStorage
+        localStorage.setItem("token", data.data);
+
+        // ✅ Trigger Navbar update immediately
+        window.dispatchEvent(new Event("authChange"));
+
+        
         setMessage("✅ Account created successfully!");
         setTimeout(() => navigate("/"), 1500); 
       } else {

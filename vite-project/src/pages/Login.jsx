@@ -5,7 +5,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,8 +22,16 @@ const Login = () => {
       const data = await res.json();
 
       if (data.success) {
+        // ✅ Save JWT token in localStorage
+        localStorage.setItem("token", data.data);
+
+        // ✅ Optional: update Navbar or global state immediately
+        window.dispatchEvent(new Event("authChange"));
+
         setMessage("✅ Login successful!");
-        setTimeout(() => navigate("/Home"), 1500); 
+
+        // Redirect to home after login
+        setTimeout(() => navigate("/"), 1500);
       } else {
         setMessage("❌ " + data.message);
       }
