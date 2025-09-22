@@ -1,25 +1,20 @@
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-
 const ChangePassword = () => {
   const { email } = useParams(); // email comes from URL /changePassword/:email
   const [password, setPassword] = useState("");
   const [changePassword, setChangePassword] = useState("");
-  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-
-const decodedEmail = decodeURIComponent(email); 
-
+  const decodedEmail = decodeURIComponent(email);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage("");
 
     if (password !== changePassword) {
-      return setMessage("❌ Password and Confirm Password must match");
+      return alert("❌ Password and Confirm Password must match");
     }
 
     try {
@@ -35,13 +30,13 @@ const decodedEmail = decodeURIComponent(email);
       const data = await res.json();
 
       if (data.success) {
-        setMessage(`✅ ${data.message || "Password changed successfully!"}`);
+        alert(`✅ ${data.message || "Password changed successfully!"}`);
         setTimeout(() => navigate("/login"), 2000);
       } else {
-        setMessage(`❌ ${data.message}`);
+        alert(`❌ ${data.message}`);
       }
     } catch (err) {
-      setMessage("⚠️ Something went wrong. Try again.");
+      alert("⚠️ Something went wrong. Try again.");
     } finally {
       setLoading(false);
     }
@@ -90,10 +85,6 @@ const decodedEmail = decodeURIComponent(email);
             {loading ? "Updating..." : "Update Password"}
           </button>
         </form>
-
-        {message && (
-          <p className="mt-4 text-center font-medium text-red-500">{message}</p>
-        )}
       </div>
     </div>
   );

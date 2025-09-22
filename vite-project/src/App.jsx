@@ -6,7 +6,7 @@ import Signup from './pages/Signup';
 import ChangePassword from './pages/changepassword';
 import EmailOtpVerification from './pages/email&otpverification';
 import Login from './pages/Login';
-import Nav from './components/Navbar';
+
 
 
 function App() {

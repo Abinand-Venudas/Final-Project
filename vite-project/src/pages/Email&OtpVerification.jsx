@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 const EmailOtpVerification = () => {
   const [step, setStep] = useState(1); // 1 = email step, 2 = OTP step
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
-  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const Navigate = useNavigate();
 
@@ -12,7 +12,6 @@ const EmailOtpVerification = () => {
   const handleEmailSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setMessage("");
 
     try {
       const res = await fetch("http://localhost:5000/emailVerification", {
@@ -23,13 +22,13 @@ const EmailOtpVerification = () => {
 
       const data = await res.json();
       if (data.success) {
-        setMessage(`✅ ${data.message}`);
+        alert(`✅ ${data.message}`);
         setStep(2); // Move to OTP step
       } else {
-        setMessage(`❌ ${data.message}`);
+        alert(`❌ ${data.message}`);
       }
     } catch (err) {
-      setMessage("⚠️ Something went wrong!");
+      alert("⚠️ Something went wrong!");
     } finally {
       setLoading(false);
     }
@@ -39,7 +38,6 @@ const EmailOtpVerification = () => {
   const handleOtpSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setMessage("");
 
     try {
       const res = await fetch("http://localhost:5000/otpVerification", {
@@ -50,15 +48,16 @@ const EmailOtpVerification = () => {
 
       const data = await res.json();
       if (data.success) {
-        setMessage(`✅ ${data.message}`);
-        setTimeout(() => Navigate(`/changepassword/${encodeURIComponent(email)}`), 1500);
-
-
+        alert(`✅ ${data.message}`);
+        setTimeout(
+          () => Navigate(`/changepassword/${encodeURIComponent(email)}`),
+          1500
+        );
       } else {
-        setMessage(`❌ ${data.message}`);
+        alert(`❌ ${data.message}`);
       }
     } catch (err) {
-      setMessage("⚠️ Something went wrong!");
+      alert("⚠️ Something went wrong!");
     } finally {
       setLoading(false);
     }
@@ -129,18 +128,12 @@ const EmailOtpVerification = () => {
           </form>
         )}
 
-        {/* Status Message */}
-        {message && (
-          <p className="mt-4 text-center font-medium">{message}</p>
-        )}
-
         {/* Back Button (only on OTP step) */}
         {step === 2 && (
           <button
             onClick={() => {
               setStep(1);
               setOtp("");
-              setMessage("");
             }}
             className="mt-4 text-sm text-blue-600 hover:underline block mx-auto"
           >

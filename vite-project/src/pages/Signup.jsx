@@ -5,7 +5,8 @@ const Signup = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
+  const [message] = useState("");
+  
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -30,13 +31,13 @@ const Signup = () => {
         window.dispatchEvent(new Event("authChange"));
 
         
-        setMessage("✅ Account created successfully!");
+        alert("✅ Account created successfully!");
         setTimeout(() => navigate("/"), 1500); 
       } else {
-        setMessage("❌ " + data.message);
+        alert("❌ " + data.message);
       }
     } catch (error) {
-      setMessage("⚠️ Something went wrong. Try again.");
+      alert("⚠️ Something went wrong. Try again.");
     }
   };
 

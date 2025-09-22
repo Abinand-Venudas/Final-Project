@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
+  const [message] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -28,15 +28,15 @@ const Login = () => {
         // ✅ Optional: update Navbar or global state immediately
         window.dispatchEvent(new Event("authChange"));
 
-        setMessage("✅ Login successful!");
+        alert("✅ Login successful!");
 
         // Redirect to home after login
         setTimeout(() => navigate("/"), 1500);
       } else {
-        setMessage("❌ " + data.message);
+        alert("❌ " + data.message);
       }
     } catch (error) {
-      setMessage("⚠️ Something went wrong. Try again.");
+      alert("⚠️ Something went wrong. Try again.");
     }
   };
 
