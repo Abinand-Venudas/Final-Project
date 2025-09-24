@@ -44,7 +44,7 @@ exports.signUp =  async function (req,res) {
         let salt = bcrypt.genSaltSync(10)
         let hashedPassword = bcrypt.hashSync(password, salt);
 
-        let userType = "buyer";
+        let userType = "seller";
 
         let data = {
             name : name,
@@ -53,7 +53,6 @@ exports.signUp =  async function (req,res) {
             user_type : userType
         }
         await users.create(data);
-
          const userData = await users.findOne({email})
          const token = jwt.sign({userId : userData._id},process.env.PRIVATE_KEY,{expiresIn : '5d',jwtid: Date.now().toString()} )
 
