@@ -6,70 +6,68 @@ const jwt = require('jsonwebtoken')
 const dotenv = require('dotenv')
 dotenv.config()
 
-exports.signUp =  async function (req,res) { 
+exports.signUp = async function (req, res) {
     try {
         let body = req.body;
         let name = body.name;
         let email = body.email;
         let password = body.password;
-
-        if(!name){
+        if (!name) {
             return res.status(400).send({
-                message : "Name is required",
-                success : false
-            });
+                message: "Name required",
+                success: false
+            })
         }
-
-        if(!email){
+        if (!email) {
             return res.status(400).send({
-                message : "Email is required",
-                success : false
-            });
+                message: "Email required",
+                success: false
+            })
         }
-        if(!password){
+        if (!password) {
             return res.status(400).send({
-                message : "Password is required",
-                success : false
-            });
+                message: "Password required",
+                success: false
+            })
         }
-        let emailCheck = await users.findOne({email : email})
+        let mailcheck = await users.findOne({ email: email })
+        if (mailcheck) {
 
-        if(emailCheck){
             return res.status(400).send({
-                message : "Email already exists",
-                success : false
-            });
+                message: "Email already exist",
+                success: false
+            })
         }
-
         let salt = bcrypt.genSaltSync(10)
-        let hashedPassword = bcrypt.hashSync(password, salt);
+        let hashedPassword = bcrypt.hashSync(password, salt)
 
-        let userType = "seller";
+
+
+        let userType = "seller"
 
         let data = {
-            name : name,
-            email : email,
-            password : hashedPassword,
-            user_type : userType
+            name: name,
+            email: email,
+            password: hashedPassword,
+            user_type: userType
         }
-        await users.create(data);
-         const userData = await users.findOne({email})
-         const token = jwt.sign({userId : userData._id},process.env.PRIVATE_KEY,{expiresIn : '5d',jwtid: Date.now().toString()} )
-
+        let userData = await users.create(data)
+        let person = await users.findOne({email})
+        let token = jwt.sign({userId : person._id},process.env.PRIVATE_KEY,{expiresIn : "5d"})
         return res.status(200).send({
-            message : "Account created successfully",
-            success : true,
+            message: "Account created successfully",
+            success: true,
             data : token
         })
-
     } catch (error) {
         console.log(error);
-        return res.status(400).send({
-            message : error.message || error,
-            success : false
+        res.status(400).send({
+            message: error.message || error,
+            success: false
         })
-            
+
     }
+
 }
 
 exports.login = async function (req, res) {
@@ -78,55 +76,51 @@ exports.login = async function (req, res) {
         let email = body.email;
         let password = body.password;
 
-        // Check if email is provided
         if (!email) {
             return res.status(400).send({
-                message: "Email is required",
+                message: "Email required",
                 success: false
-            });
+            })
         }
-
-        // Check if password is provided
         if (!password) {
             return res.status(400).send({
-                message: "Password is required",
+                message: "Password required",
                 success: false
-            });
+            })
         }
-
-        // Find user by email
-        let userData = await users.findOne({ email: email });
-        if (!userData) {
+        let matchEmail = await users.findOne({ email: email })
+        if (!matchEmail) {
             return res.status(400).send({
-                message: "User not found",
-                success: false
-            });
+                message: "Invalid Email"
+            })
         }
 
-        // Compare password
-        let isMatch = await bcrypt.compare(password, userData.password);
-        if (!isMatch) {
+
+
+        let matchPassword = await bcrypt.compare(password, matchEmail.password);
+        if (!matchPassword) {
             return res.status(400).send({
-                message: "Invalid password",
+                message: "Incorrect password",
                 success: false
-            });
+            })
         }
+        let person = await users.findOne({email})
+        let token = jwt.sign({userId : person._id},process.env.PRIVATE_KEY,{expiresIn : "5d"})
+        
 
-         const token = jwt.sign({userId : userData._id},process.env.PRIVATE_KEY,{expiresIn : '5d',jwtid: Date.now().toString()} )
-        // Success
         return res.status(200).send({
-            message: "Login successful",
+            message: "Login successfull",
             success: true,
             data : token
-        });
+        })
 
-        
     } catch (error) {
         console.log(error);
         return res.status(400).send({
-            message: error.message || 5000,
+            message: error.message || error,
             success: false
-        });
+        })
+
     }
 }
 
