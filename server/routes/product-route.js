@@ -9,5 +9,6 @@ function saveAccessControl(access_type) {
     }
 }
 router.post('/products',saveAccessControl("1,3"), productController.addProduct);
-
+router.get('/products', productController.getProducts); 
+router.get('/products/:id', productController.getProductById);
 module.exports = router;

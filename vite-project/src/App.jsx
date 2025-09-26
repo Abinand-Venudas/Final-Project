@@ -7,6 +7,7 @@ import ChangePassword from './pages/changepassword';
 import EmailOtpVerification from './pages/email&otpverification';
 import Login from './pages/Login';
 import Product from './pages/product';
+import ProductDetails from './pages/ProductDetails';
 
 
 
@@ -20,8 +21,8 @@ function App() {
         <Route path="/login" element={<Login/>} />
         <Route path="/emailVerification" element={<EmailOtpVerification/>} />
         <Route path="/changepassword/:email" element={<ChangePassword />} />
-         <Route path="/products" element={<Product/>} />
-
+        <Route path="/products" element={<Product/>} />
+        <Route path="/products/:id" element={<ProductDetails/>} />
       </Routes>
     </Router>
   );
