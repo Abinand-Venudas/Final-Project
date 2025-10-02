@@ -1,42 +1,43 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [message] = useState("");
+  const [message, setMessage] = useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      navigate("/");
+    }
+    setMessage(""); 
+  }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:5000/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
+      const res = await axios.post("http://localhost:5000/login", {
+        email,
+        password,
       });
 
-      const data = await res.json();
+      if (res.data.success) {
+        localStorage.setItem("token", res.data.data);
 
-      if (data.success) {
-        // ✅ Save JWT token in localStorage
-        localStorage.setItem("token", data.data);
-
-        // ✅ Optional: update Navbar or global state immediately
-        window.dispatchEvent(new Event("authChange"));
 
         alert("✅ Login successful!");
 
-        // Redirect to home after login
         setTimeout(() => navigate("/"), 1500);
       } else {
-        alert("❌ " + data.message);
+        setMessage(res.data.message || "Login failed.");
       }
     } catch (error) {
-      alert("⚠️ Something went wrong. Try again.");
+      console.error(error);
+      setMessage("⚠️ Something went wrong. Try again.");
     }
   };
 
@@ -56,6 +57,7 @@ const Login = () => {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
             />
           </div>
 
@@ -67,6 +69,7 @@ const Login = () => {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
             />
           </div>
 

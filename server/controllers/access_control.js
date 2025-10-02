@@ -36,7 +36,7 @@ exports.access_controller = async function (access_type, req, res, next) {
                 });
             }
 
-            // ✅ Always use `userId`
+            
             let user_id = decoded.userId;
 
             let user = await users.findOne({ _id: user_id });
@@ -48,7 +48,7 @@ exports.access_controller = async function (access_type, req, res, next) {
                 });
             }
 
-            // ✅ Correct user type check
+           
             let user_type = user.user_type;
 
             if (allowed && allowed.includes(user_type)) {

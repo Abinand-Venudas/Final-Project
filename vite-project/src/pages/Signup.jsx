@@ -1,45 +1,45 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Signup = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [message] = useState("");
-  
+  const [message, setMessage] = useState("");   
   const navigate = useNavigate();
 
+  useState(() => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:5000/signUp", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name, email, password }),
+      
+      const res = await axios.post("http://localhost:5000/signUp", {
+        name,
+        email,
+        password,
       });
 
-      const data = await res.json();
+      const data = res.data; 
 
-    if (data.success) {
-        // ✅ Save token in localStorage
+      if (data.success) {
+        
         localStorage.setItem("token", data.data);
 
-        // ✅ Trigger Navbar update immediately
         window.dispatchEvent(new Event("authChange"));
 
-        
-        alert("✅ Account created successfully!");
-        setTimeout(() => navigate("/"), 1500); 
+        setMessage("✅ Account created successfully!");
+
+        setTimeout(() => navigate("/"), 1500);
       } else {
-        alert("❌ " + data.message);
+        setMessage("❌ " + data.message);
       }
     } catch (error) {
-      alert("⚠️ Something went wrong. Try again.");
+      setMessage("⚠️ Something went wrong. Try again.");
     }
   };
+});
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -49,7 +49,7 @@ const Signup = () => {
         </h2>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
-          {/* Name */}
+          
           <div>
             <label className="block text-gray-700 mb-1">Full Name</label>
             <input
@@ -57,11 +57,9 @@ const Signup = () => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Enter your name"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"/>
           </div>
 
-          {/* Email */}
           <div>
             <label className="block text-gray-700 mb-1">Email</label>
             <input
@@ -69,11 +67,9 @@ const Signup = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"/>
           </div>
 
-          {/* Password */}
           <div>
             <label className="block text-gray-700 mb-1">Password</label>
             <input
@@ -81,15 +77,11 @@ const Signup = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"/>
           </div>
 
-          {/* Signup Button */}
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
-          >
+          <button type="submit"
+            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
             Sign Up
           </button>
         </form>
@@ -97,8 +89,7 @@ const Signup = () => {
         {message && (
           <p className="text-center mt-3 text-sm text-red-500">{message}</p>
         )}
-
-        {/* Already have account */}
+        
         <p className="text-center text-gray-600 mt-4">
           Already have an account?{" "}
           <Link to="/login" className="text-blue-600 hover:underline">

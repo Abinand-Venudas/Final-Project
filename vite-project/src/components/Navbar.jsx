@@ -7,17 +7,14 @@ const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
 
-  // Check token on mount
   useEffect(() => {
   const checkLogin = () => {
     const token = localStorage.getItem("token");
     setIsLoggedIn(!!token);
   };
 
-  // Check on mount
   checkLogin();
 
-  // Listen for manual "authChange" events
   window.addEventListener("authChange", checkLogin);
 
   return () => {
@@ -26,7 +23,7 @@ const Navbar = () => {
 }, []);
 
 
-  // Logout handler
+  
   const handleLogout = () => {
     localStorage.removeItem("token");
     setIsLoggedIn(false);
@@ -36,19 +33,19 @@ const Navbar = () => {
   return (
     <nav className="bg-white shadow-md fixed w-full z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-between p-4">
-        {/* Logo */}
+       
         <Link to="/" className="text-2xl font-bold text-blue-600">
           SnapNShop
         </Link>
 
-        {/* Desktop Menu */}
+        
         <div className="hidden md:flex items-center space-x-8">
           <Link to="/home" className="hover:text-blue-500">Home</Link>
           <Link to="/products" className="hover:text-blue-500">Products</Link>
           <Link to="/contact" className="hover:text-blue-500">Contact</Link>
           <Link to="/about" className="hover:text-blue-500">About</Link>
 
-          {/* Account / Logout */}
+          
           {!isLoggedIn ? (
             <div className="relative">
               <button
@@ -78,7 +75,7 @@ const Navbar = () => {
           )}
         </div>
 
-        {/* Mobile Toggle Button */}
+        
         <button
           onClick={() => setMenuOpen(!menuOpen)}
           className="md:hidden text-2xl text-gray-700"
@@ -87,7 +84,7 @@ const Navbar = () => {
         </button>
       </div>
 
-      {/* Mobile Menu */}
+     
       {menuOpen && (
         <div className="md:hidden bg-white border-t">
           <Link to="/home" className="block px-4 py-2 hover:bg-gray-100">Home</Link>

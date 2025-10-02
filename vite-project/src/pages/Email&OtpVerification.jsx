@@ -1,62 +1,64 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const EmailOtpVerification = () => {
-  const [step, setStep] = useState(1); // 1 = email step, 2 = OTP step
+  const [step, setStep] = useState(1); 
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
-  const Navigate = useNavigate();
+  const navigate = useNavigate();
 
-  // Handle Email Submit
+  useEffect(() => {
+    if (step === 1) {
+      setOtp("");
+    }
+  }, [step]);
+
   const handleEmailSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/emailVerification", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+      const res = await axios.post("http://localhost:5000/emailVerification", {
+        email,
       });
 
-      const data = await res.json();
-      if (data.success) {
-        alert(`✅ ${data.message}`);
-        setStep(2); // Move to OTP step
+      if (res.data.success) {
+        alert(`✅ ${res.data.message}`);
+        setStep(2);
       } else {
-        alert(`❌ ${data.message}`);
+        alert(`❌ ${res.data.message}`);
       }
     } catch (err) {
+      console.error(err);
       alert("⚠️ Something went wrong!");
     } finally {
       setLoading(false);
     }
   };
 
-  // Handle OTP Submit
   const handleOtpSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/otpVerification", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, code: otp }),
+      const res = await axios.post("http://localhost:5000/otpVerification", {
+        email,
+        code: otp,
       });
 
-      const data = await res.json();
-      if (data.success) {
-        alert(`✅ ${data.message}`);
+      if (res.data.success) {
+        alert(`✅ ${res.data.message}`);
         setTimeout(
-          () => Navigate(`/changepassword/${encodeURIComponent(email)}`),
+          () => navigate(`/changepassword/${encodeURIComponent(email)}`),
           1500
         );
       } else {
-        alert(`❌ ${data.message}`);
+        alert(`❌ ${res.data.message}`);
       }
     } catch (err) {
+      console.error(err);
       alert("⚠️ Something went wrong!");
     } finally {
       setLoading(false);
@@ -66,12 +68,10 @@ const EmailOtpVerification = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md">
-        {/* Heading */}
         <h2 className="text-2xl font-bold text-center text-blue-600 mb-6">
           {step === 1 ? "Email Verification" : "OTP Verification"}
         </h2>
 
-        {/* Step 1: Email Form */}
         {step === 1 && (
           <form onSubmit={handleEmailSubmit} className="space-y-4">
             <input
@@ -93,7 +93,6 @@ const EmailOtpVerification = () => {
           </form>
         )}
 
-        {/* Step 2: OTP Form */}
         {step === 2 && (
           <form onSubmit={handleOtpSubmit} className="space-y-4">
             <div>
@@ -128,13 +127,9 @@ const EmailOtpVerification = () => {
           </form>
         )}
 
-        {/* Back Button (only on OTP step) */}
         {step === 2 && (
           <button
-            onClick={() => {
-              setStep(1);
-              setOtp("");
-            }}
+            onClick={() => setStep(1)}
             className="mt-4 text-sm text-blue-600 hover:underline block mx-auto"
           >
             ← Change Email

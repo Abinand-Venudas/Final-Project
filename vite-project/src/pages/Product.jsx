@@ -1,22 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom"; // 👈 import Link
+import { Link } from "react-router-dom";
+import axios from "axios";
 
 const Product = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Fetch products from backend
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        let response = await fetch("http://localhost:5000/products"); // 👈 change URL if needed
-        let data = await response.json();
+        let response = await axios.get("http://localhost:5000/products"); 
 
-        if (data.success) {
-          setProducts(data.productData);
+        if (response.data.success) {
+          setProducts(response.data.productData);
         } else {
-          setError(data.message || "Failed to fetch products");
+          setError(response.data.message || "Failed to fetch products");
         }
       } catch (err) {
         setError("Error fetching products");
@@ -40,16 +40,16 @@ const Product = () => {
     <div className="p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
       {products.map((product) => (
         <Link 
-          to={`/products/${product._id}`}  // 👈 navigate to details page
-          key={product._id} 
-          className="block"
-        >
+          key={`product.id/${product._id}`}
+          to={`/products`}  
+          className="block">
+
           <div className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition">
             <img
               src={product.image || "https://via.placeholder.com/300"}
               alt={product.name}
-              className="w-full h-48 object-cover"
-            />
+              className="w-full h-48 object-cover"/>
+
             <div className="p-4">
               <h2 className="text-xl font-semibold">{product.name}</h2>
               <p className="text-gray-600">{product.description}</p>
@@ -58,7 +58,15 @@ const Product = () => {
           </div>
         </Link>
       ))}
+
+     <div className="flex justify-center mt-6">
+  <Link to="/" className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+    back to home
+  </Link>
+</div>
+
     </div>
+    
   );
 };
 

@@ -1,7 +1,6 @@
-// controllers/productController.js
+
 const Product = require('../Data-Base/Models/product');
 
-// Add a product
 exports.addProduct = async (req, res) => {
   try {
     let body = req.body;
@@ -58,6 +57,7 @@ exports.addProduct = async (req, res) => {
             success : true
         })
   } 
+
     catch (error) {
     console.log(error); 
         return res.status(400).send({
@@ -74,32 +74,6 @@ exports.getProducts = async (req, res) => {
       success: true,
       productData: products
     });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).send({
-      success: false,
-      message: error.message || "Server Error"
-    });
-  }
-};
-// Get a single product by ID
-exports.getProductById = async (req, res) => {
-  try {
-    let { id } = req.params;
-    let product = await Product.findById(id);
-
-    if (!product) {
-      return res.status(404).send({
-        success: false,
-        message: "Product not found"
-      });
-    }
-
-    return res.status(200).send({
-      success: true,
-      productData: product
-    });
-
   } catch (error) {
     console.log(error);
     return res.status(500).send({

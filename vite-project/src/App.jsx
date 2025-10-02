@@ -3,11 +3,10 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Signup from './pages/Signup'; 
-import ChangePassword from './pages/changepassword';
-import EmailOtpVerification from './pages/email&otpverification';
 import Login from './pages/Login';
-import Product from './pages/product';
-import ProductDetails from './pages/ProductDetails';
+import Product from './pages/Product';
+import EmailOtpVerification from './pages/Email&OtpVerification';
+import ChangePassword from './pages/ChangePassword';
 
 
 
@@ -22,7 +21,6 @@ function App() {
         <Route path="/emailVerification" element={<EmailOtpVerification/>} />
         <Route path="/changepassword/:email" element={<ChangePassword />} />
         <Route path="/products" element={<Product/>} />
-        <Route path="/products/:id" element={<ProductDetails/>} />
       </Routes>
     </Router>
   );

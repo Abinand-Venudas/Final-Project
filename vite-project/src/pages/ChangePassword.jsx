@@ -1,14 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
 
 const ChangePassword = () => {
-  const { email } = useParams(); // email comes from URL /changePassword/:email
+  const { email } = useParams();
   const [password, setPassword] = useState("");
   const [changePassword, setChangePassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const decodedEmail = decodeURIComponent(email);
+  useEffect(() => {
+    if (!email) {
+      alert("⚠️ Invalid request. Email not found.");
+      navigate("/login");
+      return;
+    }
+  }, [email, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,23 +26,25 @@ const ChangePassword = () => {
 
     try {
       setLoading(true);
-      const res = await fetch(`http://localhost:5000/changePassword/${email}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ password, changePassword }),
-      });
 
-      const data = await res.json();
+      const res = await axios.post(
+        `http://localhost:5000/changePassword`,
+        { password, changePassword },
+        { headers: { "Content-Type": "application/json" } }
+      );
 
+      const data = res.data; 
       if (data.success) {
         alert(`✅ ${data.message || "Password changed successfully!"}`);
+
+        localStorage.removeItem("token");
+
         setTimeout(() => navigate("/login"), 2000);
       } else {
         alert(`❌ ${data.message}`);
       }
     } catch (err) {
+      console.error(err);
       alert("⚠️ Something went wrong. Try again.");
     } finally {
       setLoading(false);
@@ -50,7 +59,6 @@ const ChangePassword = () => {
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* New Password */}
           <div>
             <label className="block text-gray-700 mb-1">New Password</label>
             <input
@@ -63,7 +71,6 @@ const ChangePassword = () => {
             />
           </div>
 
-          {/* Confirm Password */}
           <div>
             <label className="block text-gray-700 mb-1">Confirm Password</label>
             <input
@@ -76,7 +83,6 @@ const ChangePassword = () => {
             />
           </div>
 
-          {/* Submit */}
           <button
             type="submit"
             disabled={loading}
